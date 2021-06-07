@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<project name="HelloWorld" default="run">
+
+    <property name="src" location="src"/>
+    <property name="bin" location="bin"/>
+    <property name="lib" location="lib"/>
+    <property name="doc" location="doc"/>
+
+    <target name="run" depends="compile">
+        <java classname="${ant.project.name}" classpath="${bin}"/>
+
+
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${bin}"/>
+        <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" classpath="lib/junit-4.13.2.jar"/>
+    </target>
+
+    <target name="build" depends="compile">
+        <jar destfile="${bin}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class">
+            <manifest>
+                <attribute name="Main-Class" value="${ant.project.name}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${bin}"/>
+    </target>
+
+    <target name="test" depends="compile">
+        <junit>
+            <test name="TestProgram"/>
+            <classpath>
+                <pathelement location="${bin}"/>
+            </classpath>
+        </junit>
+    </target>
+
+    <target name="doc" description="generate documentation">
+        <javadoc sourcepath="${src}" destdir="${doc}"/>
+    </target>
+
+    <target name="scp">
+    </target>
+
+    <target name="history">
+    </target>
+
+    <target name="report">
+    </target>
+
+</project>
+
+
