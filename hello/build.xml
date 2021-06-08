@@ -6,24 +6,28 @@
     <property name="bin" location="bin"/>
     <property name="lib" location="lib"/>
     <property name="doc" location="doc"/>
+    <property name="META-INF" location="META-INF"/>
 
     <target name="run" depends="compile">
         <java classname="${ant.project.name}" classpath="${bin}"/>
-
-
     </target>
 
-    <target name="compile">
+    <target name="manifest">
+        <mkdir dir="${META-INF}"/>
+        <checksum file="${src}/HelloWorld.java" todir="${doc}" />
+        <checksum file="${src}/HelloWorld.java" algorithm="SHA-512" todir="${doc}" />
+        <manifest file="${META-INF}/MANIFEST.MF">
+            <attribute name="Author" value="Vorkov Nikita"/>
+        </manifest>
+    </target>
+
+    <target name="compile" depends="manifest">
         <mkdir dir="${bin}"/>
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" classpath="lib/junit-4.13.2.jar"/>
     </target>
 
     <target name="build" depends="compile">
-        <jar destfile="${bin}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class">
-            <manifest>
-                <attribute name="Main-Class" value="${ant.project.name}"/>
-            </manifest>
-        </jar>
+        <jar destfile="${bin}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" />
     </target>
 
     <target name="clean">
@@ -39,9 +43,29 @@
         </junit>
     </target>
 
-    <target name="doc" description="generate documentation">
-        <javadoc sourcepath="${src}" destdir="${doc}"/>
+    <target name="doc" depends="manifest">
+
+        <javadoc destdir="${doc}/javadoc">
+            <fileset dir="${src}" />
+        </javadoc>
+        <zip destfile="${doc}/javadoc.zip" basedir="${doc}/javadoc" />
+
+        <concat destfile="${META-INF}/MANIFEST_2.MF">
+            <fileset file="${META-INF}/MANIFEST.MF" />
+            <string value="MD5: " />
+            <fileset file="${doc}/HelloWorld.java.MD5" />
+            <string value="SHA-512: " />
+            <fileset file="${doc}/HelloWorld.java.SHA-512" />
+        </concat>
+
+        <concat destfile="${META-INF}/MANIFEST.MF">
+            <fileset file="${META-INF}/MANIFEST_2.MF" />
+        </concat>
+        <delete file="${META-INF}/MANIFEST_2.MF" />
+        <delete file="${doc}/HelloWorld.java.MD5" />
+        <delete file="${doc}/HelloWorld.java.SHA-512" />
     </target>
+
 
     <target name="scp">
     </target>
