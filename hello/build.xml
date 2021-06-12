@@ -27,14 +27,14 @@
 
     <target name="compile" depends="manifest">
         <mkdir dir="${bin}"/>
+        <local name="fail"/>
+
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
 
         <condition property="compile.fail">
             <istrue value="${fail}"/>
         </condition>
-        <condition property="compile.successful">
-                <isfalse value="${fail}"/>
-        </condition>
+
     </target>
 
     <target name="build" depends="compile">
@@ -83,7 +83,7 @@
     </target>
 
 
-    <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
+    <target name="history" depends="compile" if="compile.fail">
         <echo> 1 </echo>
         <local name="git.currentcommit"/>
 
@@ -101,8 +101,6 @@
         <antcall target="gitbackup" />
 
         <echo> 6 </echo>
-<!--            <param name="git.previouscommit" value="${git.currentcommit}"/>-->
-<!--        </antcall>-->
 
     </target>
 
