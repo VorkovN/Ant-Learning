@@ -82,24 +82,24 @@
 
 
     <target name="history" depends="compile" unless="compile.successful">
-
+        <echo> 1 </echo>
         <local name="git.currentcommit"/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
             <arg value="./parse.sh"/>
         </exec>
-
+        <echo> 2 </echo>
         <condition property="firstcommit">
             <equals arg1="${git.currentcommit}" arg2="${git.previouscommit}"/>
         </condition>
-
+        <echo> 3 </echo>
         <fail if="firstcommit" message="It's the first commit"/>
-
+        <echo> 4 </echo>
         <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./toBack.sh"/>
         </exec>
 
         <antcall target="history"/>
-
+        <echo> 5 </echo>
     </target>
 
 
