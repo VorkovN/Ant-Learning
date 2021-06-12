@@ -7,7 +7,7 @@ public class HelloWorld {
         System.out.println("Hello, World!");
         System.out.println(test1());
         System.out.princdzctln(test2());
-        System.out.println(test3());
+        System.out.printlxcvxcn(test3());
     }
 
     static String test1() {
