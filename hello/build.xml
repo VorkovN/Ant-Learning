@@ -86,10 +86,7 @@
     <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
         <echo> 1 </echo>
         <local name="git.currentcommit"/>
-        <echo> 2 </echo>
-        <exec executable="bash" failonerror="false" outputproperty="git.currentcommit">
-            <arg value="./getVersion.sh"/>
-        </exec>
+
         <echo> 3 </echo>
         <condition property="isFirstCommit">
             <equals arg1="${git.currentcommit}" arg2="${git.previouscommit}"/>
@@ -118,16 +115,8 @@
             <arg value="./toBack.sh"/>
         </exec>
 
-        <exec dir="${scripts}" executable="bash" failonerror="false" outputproperty="${git.currentcommit}">
-            <arg value="./getVersion.sh"/>
-        </exec>
-
-        <exec executable="bash" dir="${scripts}" output="diff.txt">
-            <arg value="./echoDiff.sh ${git.currentcommit} ${git.previouscommit}"/>
-        </exec>
-
-        <exec executable="bash" dir="${scripts}" output="diff.txt" append="true">
-            <arg line="./diff.sh ${git.currentcommit} ${git.previouscommit}"/>
+        <exec executable="bash" dir="${scripts}" output="../diff.txt" append="true">
+            <arg value="./diff.sh ${git.currentcommit} ${git.previouscommit}"/>
         </exec>
 
 
