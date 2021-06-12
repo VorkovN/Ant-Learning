@@ -32,7 +32,8 @@
         <condition property="compile.successful">
                 <isfalse value="${fail}"/>
         </condition>
-        <echo> compile target </echo>
+
+        <echo message="compile.successful: ${compile.successful}"/>
     </target>
 
     <target name="build" depends="compile">
