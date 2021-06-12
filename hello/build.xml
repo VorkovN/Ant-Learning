@@ -116,7 +116,7 @@
         </exec>
 
         <exec executable="bash" dir="${scripts}" output="../diff.txt" append="true">
-            <arg value="./diff.sh ${git.currentcommit} ${git.previouscommit}"/>
+            <arg value="./diff.sh git.currentcommit ${git.previouscommit}"/>
         </exec>
 
 
