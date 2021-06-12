@@ -7,6 +7,10 @@
     <property name="lib" location="lib"/>
     <property name="doc" location="doc"/>
     <property name="META-INF" location="META-INF"/>
+    <property name="scripts" location="scripts"/>
+
+    <property name="git.previouscommit" value="453fefb7ce46e1d4ec6f279d367d0f3734a6a66e"/>
+
 
     <target name="run" depends="compile">
         <java classname="${ant.project.name}" classpath="${bin}"/>
@@ -23,11 +27,18 @@
 
     <target name="compile" depends="manifest">
         <mkdir dir="${bin}"/>
-        <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" classpath="lib/junit-4.13.2.jar"/>
+        <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
+
+        <condition property="compile.fail">
+            <istrue value="${fail}"/>
+        </condition>
+        <condition property="compile.successful">
+                <isfalse value="${fail}"/>
+        </condition>
     </target>
 
     <target name="build" depends="compile">
-        <jar destfile="${bin}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" />
+        <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" />
     </target>
 
     <target name="clean">
@@ -67,13 +78,61 @@
     </target>
 
 
-    <target name="scp">
+    <target name="scp" depends="build" >
+        <scp file="${lib}/HelloWorld.jar" port="2222" todir="s284775@se.ifmo.ru:/home/s284775" password="zrj839"/>
     </target>
 
-    <target name="history">
+
+    <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
+        <echo> 1 </echo>
+        <local name="git.currentcommit"/>
+        <echo> 2 </echo>
+        <exec executable="bash" failonerror="false" outputproperty="git.currentcommit">
+            <arg value="./getVersion.sh"/>
+        </exec>
+        <echo> 3 </echo>
+        <condition property="isFirstCommit">
+            <equals arg1="${git.currentcommit}" arg2="${git.previouscommit}"/>
+        </condition>
+
+        <echo> 4 </echo>
+
+        <fail if="isFirstCommit" message="It's the first commit"/>
+
+        <echo> 5 </echo>
+
+        <antcall target="gitbackup" />
+
+        <echo> 6 </echo>
+<!--            <param name="git.previouscommit" value="${git.currentcommit}"/>-->
+<!--        </antcall>-->
+
     </target>
 
     <target name="report">
+    </target>
+
+    <target name="gitbackup" unless="compile.successful">
+        <echo> 7 </echo>
+        <exec dir="${scripts}" executable="bash">
+            <arg value="./toBack.sh"/>
+        </exec>
+
+        <exec dir="${scripts}" executable="bash" failonerror="false" outputproperty="${git.currentcommit}">
+            <arg value="./getVersion.sh"/>
+        </exec>
+
+        <exec executable="bash" dir="${scripts}" output="diff.txt">
+            <arg value="./echoDiff.sh ${git.currentcommit} ${git.previouscommit}"/>
+        </exec>
+
+        <exec executable="bash" dir="${scripts}" output="diff.txt" append="true">
+            <arg line="./diff.sh ${git.currentcommit} ${git.previouscommit}"/>
+        </exec>
+
+
+        <antcall target="history" />
+
     </target>
 
 </project>
