@@ -29,12 +29,10 @@
         <mkdir dir="${bin}"/>
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
 
-        <condition property="compile.fail">
-            <istrue value="${fail}"/>
-        </condition>
         <condition property="compile.successful">
                 <isfalse value="${fail}"/>
         </condition>
+        <echo> compile target </echo>
     </target>
 
     <target name="build" depends="compile">
@@ -83,57 +81,27 @@
     </target>
 
 
-    <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
-        <echo> 1 </echo>
+    <target name="history" depends="compile" unless="compile.successful">
+
         <local name="git.currentcommit"/>
-        <echo> 2 </echo>
-        <exec executable="bash" failonerror="false" outputproperty="git.currentcommit">
-            <arg value="./getVersion.sh"/>
+        <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
+            <arg value="./parse.sh"/>
         </exec>
-        <echo> 3 </echo>
-        <condition property="isFirstCommit">
+
+        <condition property="firstcommit">
             <equals arg1="${git.currentcommit}" arg2="${git.previouscommit}"/>
         </condition>
 
-        <echo> 4 </echo>
+        <fail if="firstcommit" message="It's the first commit"/>
 
-        <fail if="isFirstCommit" message="It's the first commit"/>
-
-        <echo> 5 </echo>
-
-        <antcall target="gitbackup" />
-
-        <echo> 6 </echo>
-<!--            <param name="git.previouscommit" value="${git.currentcommit}"/>-->
-<!--        </antcall>-->
-
-    </target>
-
-    <target name="report">
-    </target>
-
-    <target name="gitbackup" unless="compile.successful">
-        <echo> 7 </echo>
-        <exec dir="${scripts}" executable="bash">
+        <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./toBack.sh"/>
         </exec>
 
-        <exec dir="${scripts}" executable="bash" failonerror="false" outputproperty="${git.currentcommit}">
-            <arg value="./getVersion.sh"/>
-        </exec>
-
-        <exec executable="bash" dir="${scripts}" output="diff.txt">
-            <arg value="./echoDiff.sh ${git.currentcommit} ${git.previouscommit}"/>
-        </exec>
-
-        <exec executable="bash" dir="${scripts}" output="diff.txt" append="true">
-            <arg line="./diff.sh ${git.currentcommit} ${git.previouscommit}"/>
-        </exec>
-
-
-        <antcall target="history" />
+        <antcall target="history"/>
 
     </target>
+
 
 </project>
 
