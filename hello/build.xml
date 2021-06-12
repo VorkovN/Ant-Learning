@@ -97,9 +97,9 @@
         <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./toBack.sh"/>
         </exec>
-
-        <antcall target="history"/>
         <echo> 5 </echo>
+        <ant antfile="build.xml" target="history"/>
+        <echo> 6  </echo>
     </target>
 
 
