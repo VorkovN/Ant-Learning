@@ -94,9 +94,17 @@
         <echo> 3 </echo>
         <fail if="firstcommit" message="It's the first commit"/>
         <echo> 4 </echo>
+
+        <antcall target="gitbackup" />
+    </target>
+
+    <target name="gitbackup">
+        <echo> 4.5 </echo>
         <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./toBack.sh"/>
         </exec>
+
+
         <echo> 5 </echo>
         <ant antfile="build.xml" target="history"/>
         <echo> 6  </echo>
