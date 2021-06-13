@@ -29,11 +29,17 @@
         <mkdir dir="${bin}"/>
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
 
+        <condition property="compile.fail">
+            <istrue value="${fail}"/>
+        </condition>
+
         <condition property="compile.successful">
                 <isfalse value="${fail}"/>
         </condition>
 
+        <echo message="fail: ${fail}"/>
         <echo message="compile.successful: ${compile.successful}"/>
+        <echo message="compile.fail: ${compile.fail}"/>
     </target>
 
     <target name="build" depends="compile">
@@ -82,7 +88,7 @@
     </target>
 
 
-    <target name="history" depends="compile" unless="compile.successful">
+    <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
         <echo> 1 </echo>
         <local name="git.currentcommit"/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
@@ -96,7 +102,7 @@
         <fail if="firstcommit" message="It's the first commit"/>
         <echo> 4 </echo>
 
-        <antcall target="gitbackup" />
+<!--        <antcall target="gitbackup" />-->
     </target>
 
     <target name="gitbackup">
