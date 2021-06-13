@@ -89,8 +89,15 @@
         <scp file="${lib}/HelloWorld.jar" port="2222" todir="s284775@se.ifmo.ru:/home/s284775" password="zrj839"/>
     </target>
 
+    <target name="history">
+        <local name="git.lastcommit"/>
+        <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.lastcommit">
+            <arg value="./getVersion.sh"/>
+        </exec>
+        <echo message="last commit: ${git.lastcommit}"/>
+    </target>
 
-    <target name="history" depends="compile" unless="compile.successful">
+    <target name="check_commit" depends="compile" unless="compile.successful">
         <echo> 1 </echo>
         <local name="git.currentcommit"/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
@@ -115,7 +122,7 @@
 
 
         <echo> 5 </echo>
-        <ant antfile="build.xml" target="history"/>
+        <antcall target="check_commit" />
         <echo> 6  </echo>
     </target>
 
