@@ -95,6 +95,8 @@
             <arg value="./getVersion.sh"/>
         </exec>
         <echo message="last commit: ${git.lastcommit}"/>
+
+        <antcall target="check_commit" />
     </target>
 
     <target name="check_commit" depends="compile" unless="compile.successful">
