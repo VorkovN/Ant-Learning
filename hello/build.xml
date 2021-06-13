@@ -85,7 +85,8 @@
     </target>
 
     <target name="history">
-        <local name="git.lastcommit"/>
+        <property name="git.lastcommit" value=""/>
+        <property name="git.currentcommit" value=""/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.lastcommit">
             <arg value="./getVersion.sh"/>
         </exec>
@@ -93,16 +94,15 @@
 
         <antcall target="check_commit" />
 
-        <exec executable="bash" dir="${scripts}" output="diff.log" append="true">
+        <exec executable="bash" dir="${scripts}" output="diff.log">
             <arg line="./diff.sh ${git.currentcommit} ${git.lastcommit}"/>
         </exec>
     </target>
 
     <target name="check_commit" depends="compile" unless="compile.successful">
         <echo> 1 </echo>
-        <local name="git.currentcommit"/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
-            <arg value="./parse.sh"/>
+            <arg value="./getVersion.sh"/>
         </exec>
         <echo> 2 </echo>
         <condition property="firstcommit">
@@ -120,7 +120,6 @@
         <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./toBack.sh"/>
         </exec>
-
 
         <echo> 5 </echo>
         <antcall target="check_commit" />
