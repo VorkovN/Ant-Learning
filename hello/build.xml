@@ -86,16 +86,14 @@
 
     <target name="history">
         <property name="git.lastcommit" value=""/>
-        <property name="git.currentcommit" value=""/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.lastcommit">
             <arg value="./getVersion.sh"/>
         </exec>
-        <echo message="last commit: ${git.lastcommit}"/>
 
         <antcall target="check_commit" />
 
         <exec executable="bash" dir="${scripts}" output="diff.log">
-            <arg line="./diff.sh ${git.currentcommit} ${git.lastcommit}"/>
+            <arg line="./diff.sh ${git.lastcommit}"/>
         </exec>
     </target>
 
