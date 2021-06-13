@@ -31,17 +31,12 @@
         <local name="fail"/>
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
 
-        <condition property="compile.fail">
-            <istrue value="${fail}"/>
-        </condition>
-
         <condition property="compile.successful">
                 <isfalse value="${fail}"/>
         </condition>
 
         <echo message="fail: ${fail}"/>
         <echo message="compile.successful: ${compile.successful}"/>
-        <echo message="compile.fail: ${compile.fail}"/>
     </target>
 
     <target name="build" depends="compile">
@@ -97,6 +92,10 @@
         <echo message="last commit: ${git.lastcommit}"/>
 
         <antcall target="check_commit" />
+
+        <exec executable="bash" dir="${scripts}" output="diff.log" append="true">
+            <arg line="./diff.sh ${git.currentcommit} ${git.lastcommit}"/>
+        </exec>
     </target>
 
     <target name="check_commit" depends="compile" unless="compile.successful">
