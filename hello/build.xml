@@ -90,7 +90,7 @@
     </target>
 
 
-    <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
+    <target name="history" depends="compile" unless="compile.successful">
         <echo> 1 </echo>
         <local name="git.currentcommit"/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
