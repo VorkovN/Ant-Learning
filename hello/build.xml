@@ -8,6 +8,7 @@
     <property name="doc" location="doc"/>
     <property name="META-INF" location="META-INF"/>
     <property name="scripts" location="scripts"/>
+    <property name="reports" location="reports"/>
 
     <property name="git.previouscommit" value="453fefb7ce46e1d4ec6f279d367d0f3734a6a66e"/>
 
@@ -52,11 +53,12 @@
     </target>
 
     <target name="test" depends="compile">
-        <junit>
+        <junit  printsummary="yes" haltonerror="yes" haltonfailure="yes">
             <test name="TestProgram"/>
             <classpath>
                 <pathelement location="${bin}"/>
             </classpath>
+            <formatter type="xml" usefile="true"/>
         </junit>
     </target>
 
@@ -123,6 +125,12 @@
         </exec>
 
         <antcall target="check_commit" />
+    </target>
+
+    <target name="report" depends="test">
+        <exec executable="bash" dir="${scripts}" failonerror="false">
+            <arg value="./addToGit.sh"/>
+        </exec>
     </target>
 
 
