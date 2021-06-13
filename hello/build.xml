@@ -85,15 +85,15 @@
     </target>
 
     <target name="history">
-        <property name="git.lastcommit" value=""/>
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.lastcommit">
             <arg value="./getVersion.sh"/>
         </exec>
 
         <antcall target="check_commit" />
-
+        <echo> ${git.lastcommit} </echo>
         <exec executable="bash" dir="${scripts}" output="diff.log">
-            <arg line="./diff.sh ${git.lastcommit}"/>
+            <arg value="./diff.sh"/>
+            <arg value="${git.lastcommit}"/>
         </exec>
     </target>
 
