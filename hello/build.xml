@@ -102,7 +102,7 @@
         <fail if="firstcommit" message="It's the first commit"/>
         <echo> 4 </echo>
 
-<!--        <antcall target="gitbackup" />-->
+        <antcall target="gitbackup" />
     </target>
 
     <target name="gitbackup">
