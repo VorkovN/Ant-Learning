@@ -27,6 +27,8 @@
 
     <target name="compile" depends="manifest">
         <mkdir dir="${bin}"/>
+
+        <local name="fail"/>
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
 
         <condition property="compile.fail">
