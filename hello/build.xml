@@ -34,9 +34,6 @@
         <condition property="compile.successful">
                 <isfalse value="${fail}"/>
         </condition>
-
-        <echo message="fail: ${fail}"/>
-        <echo message="compile.successful: ${compile.successful}"/>
     </target>
 
     <target name="build" depends="compile">
@@ -90,7 +87,7 @@
         </exec>
 
         <antcall target="check_commit" />
-        <echo> ${git.lastcommit} </echo>
+
         <exec executable="bash" dir="${scripts}" output="diff.log">
             <arg value="./diff.sh"/>
             <arg value="${git.lastcommit}"/>
@@ -98,30 +95,27 @@
     </target>
 
     <target name="check_commit" depends="compile" unless="compile.successful">
-        <echo> 1 </echo>
+
         <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
             <arg value="./getVersion.sh"/>
         </exec>
-        <echo> 2 </echo>
+
         <condition property="firstcommit">
             <equals arg1="${git.currentcommit}" arg2="${git.previouscommit}"/>
         </condition>
-        <echo> 3 </echo>
+
         <fail if="firstcommit" message="It's the first commit"/>
-        <echo> 4 </echo>
 
         <antcall target="gitbackup" />
     </target>
 
     <target name="gitbackup">
-        <echo> 4.5 </echo>
+
         <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./toBack.sh"/>
         </exec>
 
-        <echo> 5 </echo>
         <antcall target="check_commit" />
-        <echo> 6  </echo>
     </target>
 
 
