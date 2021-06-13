@@ -53,13 +53,15 @@
     </target>
 
     <target name="test" depends="compile">
-        <junit  printsummary="yes" haltonerror="yes" haltonfailure="yes">
+
+        <junit  printsummary="yes" haltonerror="yes" haltonfailure="yes" errorProperty="failTest">
             <test name="TestProgram"/>
             <classpath>
                 <pathelement location="${bin}"/>
             </classpath>
             <formatter type="xml" usefile="true"/>
         </junit>
+
     </target>
 
     <target name="doc" depends="manifest">
@@ -127,7 +129,7 @@
         <antcall target="check_commit" />
     </target>
 
-    <target name="report" depends="test">
+    <target name="report" depends="test" unless="failTest">
         <exec executable="bash" dir="${scripts}" failonerror="false">
             <arg value="./addToGit.sh"/>
         </exec>
