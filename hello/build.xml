@@ -33,8 +33,12 @@
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
 
         <condition property="compile.successful">
-                <isfalse value="${fail}"/>
+            <not>
+                <istrue value="${fail}"/>
+            </not>
         </condition>
+
+        <echo message="${compile.fail}" />
     </target>
 
     <target name="build" depends="compile">
