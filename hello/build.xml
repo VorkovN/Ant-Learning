@@ -37,11 +37,18 @@
     </target>
 
     <target name="build" depends="compile">
-        <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" />
+        <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" >
+        	<manifest>
+        		<attribute name="Main-Class" value="${ant.project.name}"/>
+        	</manifest>
+        </jar>
     </target>
 
     <target name="clean">
         <delete dir="${bin}"/>
+        <delete dir="${doc}"/>
+        <delete file="${lib}/HelloWorld.jar"/>
+        <delete dir="META-INF"/>
     </target>
 
     <target name="test" depends="compile">
