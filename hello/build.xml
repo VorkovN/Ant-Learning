@@ -8,6 +8,7 @@
     <property name="doc" location="doc"/>
     <property name="META-INF" location="META-INF"/>
     <property name="scripts" location="scripts"/>
+    <property name="reports" location="reports"/>
 
     <property name="git.previouscommit" value="453fefb7ce46e1d4ec6f279d367d0f3734a6a66e"/>
 
@@ -27,16 +28,9 @@
 
     <target name="compile" depends="manifest">
         <mkdir dir="${bin}"/>
+
         <local name="fail"/>
-
         <javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" errorProperty="fail" failonerror="false"/>
-
-        <local name="compile.fail"/>
-
-
-        <condition property="compile.fail">
-            <istrue value="${fail}"/>
-        </condition>
 
         <condition property="compile.successful">
             <not>
@@ -48,19 +42,27 @@
     </target>
 
     <target name="build" depends="compile">
-        <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" />
+        <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" excludes="Test*.class" >
+        	<manifest>
+        		<attribute name="Main-Class" value="${ant.project.name}"/>
+        	</manifest>
+        </jar>
     </target>
 
     <target name="clean">
         <delete dir="${bin}"/>
+        <delete dir="${doc}"/>
+        <delete file="${lib}/HelloWorld.jar"/>
+        <delete dir="META-INF"/>
     </target>
 
     <target name="test" depends="compile">
-        <junit>
+        <junit  printsummary="yes" haltonerror="yes" haltonfailure="yes">
             <test name="TestProgram"/>
             <classpath>
                 <pathelement location="${bin}"/>
             </classpath>
+            <formatter type="xml" usefile="true"/>
         </junit>
     </target>
 
@@ -92,50 +94,49 @@
         <scp file="${lib}/HelloWorld.jar" port="2222" todir="s284775@se.ifmo.ru:/home/s284775" password="zrj839"/>
     </target>
 
+    <target name="history">
+        <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.lastcommit">
+            <arg value="./getVersion.sh"/>
+        </exec>
 
-    <target name="history" depends="compile" if="compile.fail" unless="compile.successful">
+        <antcall target="check_commit" />
 
-        <local name="git.currentcommit"/>
-        <local name="git.previouscommit"/>
-        <exec executable="bash" failonerror="false" outputproperty="git.currentcommit">
-            <arg value="./parse.sh"/>
+        <exec executable="bash" dir="${scripts}" output="diff.log">
+            <arg value="./diff.sh"/>
+            <arg value="${git.lastcommit}"/>
+        </exec>
+    </target>
+
+    <target name="check_commit" depends="compile" unless="compile.successful">
+
+        <exec executable="bash" dir="${scripts}" failonerror="false" outputproperty="git.currentcommit">
+            <arg value="./getVersion.sh"/>
         </exec>
 
         <condition property="firstcommit">
             <equals arg1="${git.currentcommit}" arg2="${git.previouscommit}"/>
         </condition>
 
-
         <fail if="firstcommit" message="It's the first commit"/>
 
-        <antcall target="gitbackup">
-            <param name="git.previouscommit" value="${git.currentcommit}"/>
-        </antcall>
+        <antcall target="gitbackup" />
     </target>
 
-    <target name="gitbackup" unless="compile.successful">
-        <exec executable="bash">
-            <arg value="./fuck.sh"/>
+    <target name="gitbackup">
+
+        <exec executable="bash" dir="${scripts}" failonerror="false">
+            <arg value="./toBack.sh"/>
         </exec>
 
-        <local name="git.currentcommit"/>
-        <exec executable="bash" failonerror="false" outputproperty="git.currentcommit">
-            <arg value="./parse.sh"/>
-        </exec>
-
-
-        <exec executable="bash" dir="." output="diff.txt">
-            <arg value="./echo1.sh ${git.currentcommit} ${git.previouscommit}"/>
-        </exec>
-
-        <exec executable="bash" dir="." output="diff.txt" append="true">
-            <arg value="./diff.sh ${git.currentcommit} ${git.previouscommit}"/>
-        </exec>
-
-
-        <antcall target="history"/>
-
+        <antcall target="check_commit" />
     </target>
+
+    <target name="report" depends="test">
+        <exec executable="bash" dir="${scripts}" failonerror="false">
+            <arg value="./addToGit.sh"/>
+        </exec>
+    </target>
+
 
 </project>
 
